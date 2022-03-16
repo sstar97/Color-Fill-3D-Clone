@@ -30,9 +30,14 @@ public class Enemy : MonoBehaviour
             Debug.Log("col calisti");
         }
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.tag == "Fill")
+        {
+            Destroy(this.gameObject);
+            Debug.Log("trig calisti");
+        }
+        if (other.gameObject.tag == "Tail")
         {
             Destroy(this.gameObject);
             Debug.Log("trig calisti");

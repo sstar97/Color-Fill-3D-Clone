@@ -9,6 +9,7 @@ TagManager:
   - Tag
   - BoardMan
   - Fill
+  - Tail
   layers:
   - Default
   - TransparentFX

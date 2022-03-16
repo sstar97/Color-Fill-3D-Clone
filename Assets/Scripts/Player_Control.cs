@@ -12,12 +12,13 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private GameObject gameBoard;
     [SerializeField] private GameObject prefabTile;
     [SerializeField] private BoardManager board;
-    [SerializeField] private float fillDelay = 0.005f;
+    [SerializeField] private float fillDelay = 0.001f;
     [SerializeField] private List<Vector2> paths;
     [SerializeField] private GameObject GameOver;
     private Vector3 startPos;
     private int move;
-    private bool moveC;
+    public bool moveC;
+    public bool tailOpen;
 
     [SerializeField] public static float moveSpeed = 5f;
 
@@ -25,11 +26,12 @@ public class Player_Control : MonoBehaviour
     {
         startPos = Player.position;
         moveC = false;
+        tailOpen = true;
         move = 0;
     }
     private void Update()
     {
-        
+
         if (swipeControl.SwipeLeft && move != 2)
         {
             Player.position = new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y), Player.position.z);
@@ -64,17 +66,20 @@ public class Player_Control : MonoBehaviour
         }
         int x = (int)Mathf.Round(Player.position.x);
         int y = (int)Mathf.Round(Player.position.y);
-        if (board.grid[x, y].GetComponent<SpriteRenderer>().color != Color.yellow)
+        if (board.grid[x, y].GetComponent<SpriteRenderer>().color != Color.cyan
+            && board.grid[x, y].GetComponent<SpriteRenderer>().color != Color.black
+            && board.grid[x, y].GetComponent<SpriteRenderer>().color != Color.green)
         {
-            board.grid[x, y].GetComponent<SpriteRenderer>().color = Color.yellow;
+            board.grid[x, y].GetComponent<SpriteRenderer>().color = Color.cyan;
         }
-        Tail_Follow(new Vector3(Player.transform.position.x, Player.transform.position.y, Player.transform.position.z), move);
+        if (tailOpen == true)
+            Tail_Follow(new Vector3(Player.transform.position.x, Player.transform.position.y, Player.transform.position.z), move);
         //Player.transform.position = Vector3.MoveTowards(Player.transform.position, desPos, moveSpeed * Time.deltaTime);
     }
 
     private void FixedUpdate()
     {
-        
+
         if (move == 1 && moveC == true)
         {
             this.transform.Translate(Time.deltaTime * -5f, 0, 0);
@@ -109,16 +114,22 @@ public class Player_Control : MonoBehaviour
     {
         if (other.gameObject.tag == "Wall" && moveC == true)
         {
+            paths.Add(new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y)));
             control();
+            tailOpen = false;
             moveC = false;
+
             move = 0;
         }
         if (other.gameObject.tag == "Fill" && moveC == true)
         {
-            if (paths.Count - 1 >= 2)
-            {
+            int x = (int)Mathf.Round(Player.position.x);
+            int y = (int)Mathf.Round(Player.position.y);
+            paths.Add(new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y)));
+            if (board.grid[x, y].GetComponent<SpriteRenderer>().color != Color.green)
                 control();
-            }
+            
+            tailOpen = false;
         }
         if (other.gameObject.tag == "Enemy" && moveC == true)
         {
@@ -128,6 +139,28 @@ public class Player_Control : MonoBehaviour
                 Destroy(this.gameObject);
             }
             Debug.Log("DEAD");
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Fill" && moveC == true)
+        {
+            if (tailOpen == true)
+                tailOpen = false;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        paths.Add(new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y)));
+        if (other.gameObject.tag == "Fill" && moveC == true)
+        {
+            if (tailOpen == false)
+            {
+                tailOpen = true;
+                paths.Clear();
+            }
         }
     }
 
@@ -161,12 +194,64 @@ public class Player_Control : MonoBehaviour
 
     private void control()
     {
+        int midX = Mathf.RoundToInt((paths[paths.Count - 1].x - paths[0].x));
+        int midY = Mathf.RoundToInt((paths[paths.Count - 1].y - paths[0].y));
         paths.Add(new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y)));
         Debug.Log(paths[paths.Count - 1].x);
         Debug.Log(paths[paths.Count - 1].y);
         Player.position = new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y), Player.position.z);
-        
-        if (paths[0].x < paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
+
+        if (paths[0].x < paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            Debug.Log("midx1: " + midX);
+        }
+        else if (paths[0].x >= paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
+        {
+            if (paths[0].x < horizontalBorderLimits.GetChild(1).position.y /2)
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            else
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            Debug.Log("midx2: " + midX);
+        }
+        else if (paths[0].x == paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            Debug.Log("x= y< midy: " + midY);
+        }
+        else if (paths[0].x == paths[paths.Count - 1].x && paths[0].y >= paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
+            Debug.Log("x= y>= midy: " + midY);
+        }
+        else if (paths[0].x < paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            Debug.Log("x< y< midy: " + midY);
+            Debug.Log("x< y< midx: " + midX);
+        }
+        else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            Debug.Log("x> y< midy: " + midY);
+        }
+        else if (paths[0].x < paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            Debug.Log("x> y> midy: " + midY);
+        }
+        else if (paths[0].x >= paths[paths.Count - 1].x && paths[0].y >= paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
+            Debug.Log("x> y> midy: " + midY);
+        }
+        /*else if (paths[0].y > paths[paths.Count - 1].y && paths[0].y == paths[paths.Count - 1].y)
+        {
+            StartCoroutine(Flood((int)Mathf.Round(Player.position.x - midX / 2), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            Debug.Log("midx: " + midX);
+        }*/
+
+        /*if (paths[0].x < paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
         {
             StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             //StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
@@ -209,11 +294,11 @@ public class Player_Control : MonoBehaviour
         {
             StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             Debug.Log("sorun :" + 8);
-        }
-        StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y), Color.yellow, Color.green));
+        }*/
+        StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y), Color.cyan, Color.green));
         Debug.Log("startpos : " + startPos);
         Debug.Log(horizontalBorderLimits.GetChild(1).position.y / 2);
-        
+
         paths.Clear();
         Debug.Log("trigger");
     }
