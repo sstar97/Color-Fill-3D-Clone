@@ -11,7 +11,7 @@ public class Restart : MonoBehaviour
     float timer = 10;
     void Start()
     {
-        
+        timer = 10;
     }
     private void Update()
     {

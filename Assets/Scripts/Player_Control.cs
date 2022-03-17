@@ -15,7 +15,9 @@ public class Player_Control : MonoBehaviour
     [SerializeField] private float fillDelay = 0.001f;
     [SerializeField] private List<Vector2> paths;
     [SerializeField] private GameObject GameOver;
+    [SerializeField] private LevelUp levelUp;
     private Vector3 startPos;
+    int levelPoint = 0;
     private int move;
     public bool moveC;
     public bool tailOpen;
@@ -24,6 +26,7 @@ public class Player_Control : MonoBehaviour
 
     private void Start()
     {
+        levelUp.SetMaxPoint(Mathf.RoundToInt(horizontalBorderLimits.GetChild(1).position.x) * Mathf.RoundToInt(horizontalBorderLimits.GetChild(1).position.y));
         startPos = Player.position;
         moveC = false;
         tailOpen = true;
@@ -153,13 +156,15 @@ public class Player_Control : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        paths.Add(new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y)));
+        paths.Add(new Vector3((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y)));
         if (other.gameObject.tag == "Fill" && moveC == true)
         {
+            paths.Add(new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y)));
             if (tailOpen == false)
             {
                 tailOpen = true;
-                paths.Clear();
+                if (board.grid[(int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y)].GetComponent<SpriteRenderer>().color != Color.cyan)
+                    paths.Clear();
             }
         }
     }
@@ -173,6 +178,7 @@ public class Player_Control : MonoBehaviour
             if (board.grid[x, y].GetComponent<SpriteRenderer>().color == oldColor
                 || board.grid[x, y].GetComponent<SpriteRenderer>().color == Color.red)
             {
+                levelPoint++;
                 board.grid[x, y].GetComponent<SpriteRenderer>().color = newColor;
                 GameObject fill = Instantiate(Fill);
                 fill.transform.position = new Vector2(gameBoard.transform.position.x + (GetSize(prefabTile).x * x), gameBoard.transform.position.y + (GetSize(prefabTile).y * y));
@@ -298,7 +304,7 @@ public class Player_Control : MonoBehaviour
         StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y), Color.cyan, Color.green));
         Debug.Log("startpos : " + startPos);
         Debug.Log(horizontalBorderLimits.GetChild(1).position.y / 2);
-
+        levelUp.SetLevelPoint(levelPoint);
         paths.Clear();
         Debug.Log("trigger");
     }
