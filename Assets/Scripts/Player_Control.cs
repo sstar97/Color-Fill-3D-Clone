@@ -209,7 +209,10 @@ public class Player_Control : MonoBehaviour
 
         if (paths[0].x < paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            if (paths[0].y < horizontalBorderLimits.GetChild(1).position.y / 2)
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            else
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
             Debug.Log("midx1: " + midX);
         }
         else if (paths[0].x >= paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
@@ -217,7 +220,7 @@ public class Player_Control : MonoBehaviour
             if (paths[0].x < horizontalBorderLimits.GetChild(1).position.y /2)
                 StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             else
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
             Debug.Log("midx2: " + midX);
         }
         else if (paths[0].x == paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
@@ -232,14 +235,40 @@ public class Player_Control : MonoBehaviour
         }
         else if (paths[0].x < paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
-            Debug.Log("x< y< midy: " + midY);
-            Debug.Log("x< y< midx: " + midX);
+            //StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            if (Mathf.Abs(midY) / 2 - 1 != 1)
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2 - 1), Color.white, Color.green));
+            else
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2 - 2), Color.white, Color.green));
+            Debug.Log("x< y< midy: " + (Mathf.Abs(midY) / 2 - 1));
+            Debug.Log("x< y< midx: " + Mathf.Abs(midX) / 2);
         }
         else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
-            Debug.Log("x> y< midy: " + midY);
+            // FIX THIS PLS
+            /*
+             * |xxxxxxx
+             * |xxxxxxx
+             * - - -xxx
+             *     |xxx
+             *     ----
+             */
+            if (paths[paths.Count - 1].x < 0)
+            {
+                if (Mathf.Abs(midY) / 2 - 1 != 1)
+                    StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2 - 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2 - 1), Color.white, Color.green));
+                else
+                    StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2 - 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
+            else
+            {
+                if (Mathf.Abs(midY) / 2 - 1 != 1)
+                    StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2 + 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+                else
+                    StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2 + 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
+            Debug.Log("x> y< midx: " + (Mathf.Abs(midX) / 2 - 1));
+            Debug.Log("x> y< midy: " + (Mathf.Abs(midY) / 2 - 1));
         }
         else if (paths[0].x < paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
         {
