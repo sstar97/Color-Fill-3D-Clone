@@ -81,7 +81,6 @@ public class Player_Control : MonoBehaviour
         
         if (levelUp.slider.value == levelUp.slider.maxValue)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        //Player.transform.position = Vector3.MoveTowards(Player.transform.position, desPos, moveSpeed * Time.deltaTime);
     }
 
     private void FixedUpdate()
@@ -249,14 +248,6 @@ public class Player_Control : MonoBehaviour
         }
         else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
         {
-            // FIX THIS PLS
-            
-             * |xxxxxxx
-             * |xxxxxxx
-             * - - -xxx
-             *     |xxx
-             *     ----
-             
             if (paths[paths.Count - 1].x < 0)
             {
                 if (Mathf.Abs(midY) / 2 - 1 != 1)
