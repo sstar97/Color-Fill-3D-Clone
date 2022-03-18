@@ -40,7 +40,7 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.tag == "Tail")
         {
             Destroy(this.gameObject);
-            Debug.Log("trig calisti");
+            Debug.Log("a");
         }
     }
     /*private void OnTriggerStay(Collider other)

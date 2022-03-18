@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player_Control : MonoBehaviour
 {
@@ -77,6 +78,9 @@ public class Player_Control : MonoBehaviour
         }
         if (tailOpen == true)
             Tail_Follow(new Vector3(Player.transform.position.x, Player.transform.position.y, Player.transform.position.z), move);
+        
+        if (levelUp.slider.value == levelUp.slider.maxValue)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         //Player.transform.position = Vector3.MoveTowards(Player.transform.position, desPos, moveSpeed * Time.deltaTime);
     }
 
@@ -207,7 +211,7 @@ public class Player_Control : MonoBehaviour
         Debug.Log(paths[paths.Count - 1].y);
         Player.position = new Vector3(Mathf.Round(Player.position.x), Mathf.Round(Player.position.y), Player.position.z);
 
-        if (paths[0].x < paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
+        /*if (paths[0].x < paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
         {
             if (paths[0].y < horizontalBorderLimits.GetChild(1).position.y / 2)
                 StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
@@ -246,13 +250,13 @@ public class Player_Control : MonoBehaviour
         else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
         {
             // FIX THIS PLS
-            /*
+            
              * |xxxxxxx
              * |xxxxxxx
              * - - -xxx
              *     |xxx
              *     ----
-             */
+             
             if (paths[paths.Count - 1].x < 0)
             {
                 if (Mathf.Abs(midY) / 2 - 1 != 1)
@@ -279,34 +283,72 @@ public class Player_Control : MonoBehaviour
         {
             StartCoroutine(Flood((int)Mathf.Round(Player.position.x + Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
             Debug.Log("x> y> midy: " + midY);
-        }
+        }*/
+
+
         /*else if (paths[0].y > paths[paths.Count - 1].y && paths[0].y == paths[paths.Count - 1].y)
         {
             StartCoroutine(Flood((int)Mathf.Round(Player.position.x - midX / 2), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
             Debug.Log("midx: " + midX);
         }*/
 
-        /*if (paths[0].x < paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
+        if (paths[0].x < paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
         {
+            if (paths[paths.Count - 1].y >= horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+            }
             StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             //StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
             Debug.Log(1);
         }
         else if (paths[0].x < paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
-            Debug.Log(2);
+            if (paths[paths.Count - 1].y <= horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            }
+                Debug.Log(2);
         }
         else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y > paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            if (paths[paths.Count - 1].y <= horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+            }
             Debug.Log(3);
         }
         else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y < paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            if (paths[paths.Count - 1].x < horizontalBorderLimits.GetChild(1).position.x / 2
+                && paths[paths.Count - 1].y < horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
+            }
             Debug.Log(4);
         }
         else if (paths[0].x < paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
@@ -317,19 +359,48 @@ public class Player_Control : MonoBehaviour
         }
         else if (paths[0].x > paths[paths.Count - 1].x && paths[0].y == paths[paths.Count - 1].y)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            if (paths[paths.Count - 1].y <= horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
             Debug.Log(6);
         }
-        else if (paths[0].x == paths[paths.Count - 1].x && paths[paths.Count - 1].y > horizontalBorderLimits.GetChild(1).position.y / 2)
+        else if (paths[0].x == paths[paths.Count - 1].x && paths[paths.Count - 1].x > horizontalBorderLimits.GetChild(1).position.x / 2)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+            if (paths[paths.Count - 1].y > horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.y - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
             Debug.Log(7);
         }
-        else if (paths[0].x == paths[paths.Count - 1].x && paths[paths.Count - 1].y <= horizontalBorderLimits.GetChild(1).position.y / 2)
+        else if (paths[0].x == paths[paths.Count - 1].x && paths[paths.Count - 1].x <= horizontalBorderLimits.GetChild(1).position.x / 2)
         {
-            StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            if (paths[paths.Count - 1].y > horizontalBorderLimits.GetChild(1).position.y / 2)
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
+            else
+            {
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
+            }
+            //StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+            //StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
             Debug.Log("sorun :" + 8);
-        }*/
+        }
         StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y), Color.cyan, Color.green));
         Debug.Log("startpos : " + startPos);
         Debug.Log(horizontalBorderLimits.GetChild(1).position.y / 2);
