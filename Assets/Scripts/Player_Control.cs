@@ -292,8 +292,8 @@ public class Player_Control : MonoBehaviour
             }
             else
             {
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + Mathf.Abs(midY) / 2), Color.white, Color.green));
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             }
             StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             //StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y), Color.white, Color.green));
@@ -317,8 +317,8 @@ public class Player_Control : MonoBehaviour
         {
             if (paths[paths.Count - 1].y <= horizontalBorderLimits.GetChild(1).position.y / 2)
             {
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y + 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
             }
             else
             {
@@ -366,13 +366,13 @@ public class Player_Control : MonoBehaviour
         {
             if (paths[paths.Count - 1].y > horizontalBorderLimits.GetChild(1).position.y / 2)
             {
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x + 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - 1), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
             }
             else
             {
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.x - 1), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
-                StartCoroutine(Flood((int)Mathf.Round(Player.position.y - Mathf.Abs(midX) / 2), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
+                StartCoroutine(Flood((int)Mathf.Round(Player.position.x), (int)Mathf.Round(Player.position.y - Mathf.Abs(midY) / 2), Color.white, Color.green));
             }
             Debug.Log(7);
         }
